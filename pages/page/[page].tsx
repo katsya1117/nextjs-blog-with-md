@@ -2,25 +2,31 @@ import Head from "next/head"
 import Image from "next/image"
 import Layout, { siteTitle } from "../../components/layout"
 import { Pagination } from "../../components/pagination"
-import { getSortedPostsData } from "../../lib/posts"
 import Link from "next/link"
 import Date from "../../components/date"
 import type { GetStaticProps, GetStaticPaths } from "next"
 import { PER_PAGE } from "../../lib/constants";
-import { PostData } from "@/types/postData"
+import { client } from "../../lib/client";
 
-interface PageProps {
-  posts: PostData[]
-  totalPages: number
-  currentPage: number
-  totalCount: number
+interface Blog {
+  id: string;
+  title: string;
+  date: string;
+  body: string;
+  thumbnail: { url: string; width: number; height: number } | null;
 }
 
+interface PageProps {
+  posts: Blog[];
+  totalPages: number;
+  currentPage: number;
+  totalCount: number;
+}
 
 // getStaticPaths - 2ページ目以降のパスを生成
 export const getStaticPaths: GetStaticPaths = async () => {
-  const allPostsData = getSortedPostsData() // 全投稿データを取得
-  const totalPages = Math.ceil(allPostsData.length / PER_PAGE) // 総ページ数計算
+  const data = await client.get({ endpoint: "blogs" });
+  const totalPages = Math.ceil(data.totalCount / PER_PAGE);
 
   const paths = totalPages > 1 ? Array.from({ length: totalPages - 1 }, (_, i) => ({ 
     params: { page: String(i + 2) }, // 2ページ目以降のパス生成
@@ -35,20 +41,22 @@ export const getStaticPaths: GetStaticPaths = async () => {
 // getStaticProps - 各ページのデータを取得
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   const page = Number(params?.page) || 1    // ページ番号を取得
-  const allPostsData = getSortedPostsData() // 全投稿データを取得
-  console.log('Total number of posts:', allPostsData.length);
-  const startIndex = (page - 1) * PER_PAGE  // 開始インデックス計算
-  const posts = allPostsData.slice(startIndex, startIndex + PER_PAGE)   // 該当ページの投稿のみ取得
-  const totalPages = Math.ceil(allPostsData.length / PER_PAGE)  // 総ページ数
+  const offset = (page - 1) * PER_PAGE;
+
+  const data = await client.get({
+    endpoint: "blogs",
+    queries: { offset, limit: PER_PAGE },
+  });
+  const totalPages = Math.ceil(data.totalCount / PER_PAGE);
 
   return {
     props: {
-      posts,
+      posts: data.contents,
       totalPages,
       currentPage: page,
-      totalCount: allPostsData.length,
+      totalCount: data.totalCount,
     },
-  }
+  };
 }
 
 export default function PagedPosts({ posts, totalPages, currentPage}: PageProps) {
@@ -67,7 +75,7 @@ export default function PagedPosts({ posts, totalPages, currentPage}: PageProps)
                 <Link href={`/posts/${id}`}>
                   <div className="group relative block h-48 overflow-hidden bg-gray-100 md:h-64">
                     <Image
-                      src={thumbnail || "/placeholder.svg"}
+                      src={thumbnail?.url || "/placeholder.svg"}
                       alt={title}
                       width={500}
                       height={500}
