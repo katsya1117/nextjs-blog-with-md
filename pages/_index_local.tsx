@@ -2,36 +2,28 @@ import Head from "next/head";
 import Image from "next/image";
 import Layout, { siteTitle } from "../components/layout";
 import { Pagination } from "../components/pagination"
+import { getSortedPostsData } from "../lib/posts";
 import Link from "next/link";
 import Date from "../components/date";
+import { HomeProps} from "../types/postData";
 import { PER_PAGE } from "../lib/constants";
-import { client } from "../lib/client";
-import { Blog } from "../types/blog";
 
 export async function getStaticProps() {
-  const data = await client.get({
-    endpoint: "blogs",
-    queries: {
-      limit: PER_PAGE,
-      offset: 0,
-    },
-  });
-
+  const allPostsData = getSortedPostsData();
+  console.log('Total number of posts:', allPostsData.length);
+  const posts = allPostsData.slice(0, PER_PAGE) // Only first page
+  const totalPages = Math.ceil(allPostsData.length / PER_PAGE)
   return {
     props: {
-      posts: data.contents,
-      totalPages: Math.ceil(data.totalCount / PER_PAGE),
+      posts,
+      totalPages,
       currentPage: 1,
-      totalCount: data.totalCount,
+      totalCount: allPostsData.length,
     },
   };
 }
 
-export default function Home({ posts, totalPages, currentPage }: {
-  posts: Blog[];
-  totalPages: number;
-  currentPage: number;
-}) {
+export default function Home({ posts, totalPages, currentPage }: HomeProps) {
   return (
     <Layout home>
       <Head>
@@ -42,26 +34,22 @@ export default function Home({ posts, totalPages, currentPage }: {
           Blog
         </h2>
 
+        {/* <div className={styles.grid}> */}
           <div className="container mx-auto px-5 py-10">
             <div className="grid gap-4 sm:grid-cols-2 md:gap-6 lg:grid-cols-3">
               {/* 一つ一つのブログをdivで生成してgrid適用させる */}
-              {posts.map(({ id, publishedAt, title, thumbnail  }) => (
-                <article
-                 key={id}
-                 className="flex flex-col overflow-hidden rounded-lg border bg-white"
-                 >
+              {posts.map(({ id, date, title, thumbnail }) => (
+                <article key={id} className="flex flex-col overflow-hidden rounded-lg border bg-white">
                     <Link href={`/posts/${id}`}>
                       <div className="group relative block h-48 overflow-hidden bg-gray-100 md:h-64">
-                        {thumbnail?.url && (
-                      <Image
-                        src={thumbnail.url}
-                        alt={title}
-                        width={thumbnail.width}
-                        height={thumbnail.height}
-                        priority
-                        className="absolute inset-0 h-full w-full object-cover object-center transition duration-200 group-hover:scale-110"
-                      />
-                    )}
+                        <Image
+                          src={thumbnail}
+                          alt={title}
+                          width={500}
+                          height={500}
+                          className="absolute inset-0 h-full w-full object-cover object-center transition duration-200 group-hover:scale-110"
+                          // object-cover
+                        />
                       </div>
                     </Link>
                     {/* title */}
@@ -75,7 +63,7 @@ export default function Home({ posts, totalPages, currentPage }: {
                       {/* date */}
                       <div className="mt-auto flex items-end justify-between">
                       <small className="text-gray-400 text-sm">
-                        <Date dateString={publishedAt} />
+                        <Date dateString={date} />
                       </small>
                       </div>
                     </div>
