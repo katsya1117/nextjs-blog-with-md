@@ -23,10 +23,8 @@ export default function Header({ home }: HeaderProps) {
             {name}
           </h1>
           <section className="text-lg text-gray-700 text-center">
-        <p>
-          備忘録
-        </p>
-      </section>
+            <p>備忘録</p>
+          </section>
         </>
       ) : (
         <>
@@ -50,7 +48,7 @@ export default function Header({ home }: HeaderProps) {
         </>
       )}
 
-      <nav className="grid grid-cols-3 w-full max-w-md">
+      {/* <nav className="grid grid-cols-1 w-full max-w-md">
         <Link
           href="/"
           className="text-sm font-medium text-slate-700 hover:text-indigo-600 transition-colors duration-200 px-3 py-2 hover:bg-indigo-50 text-center"
@@ -69,7 +67,7 @@ export default function Header({ home }: HeaderProps) {
         >
           Programming
         </Link>
-      </nav>
+      </nav> */}
     </header>
   );
 }
