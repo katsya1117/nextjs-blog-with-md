@@ -41,6 +41,9 @@ export default function Home({ posts, totalPages, currentPage }: {
         <h2 className="text-3xl font-bold my-4 text-center">
           Blog
         </h2>
+        <section className="text-lg text-gray-700 text-center">
+            <p>備忘録</p>
+          </section>
 
           <div className="container mx-auto px-5 py-10">
             <div className="grid gap-4 sm:grid-cols-2 md:gap-6 lg:grid-cols-3">
@@ -89,5 +92,5 @@ export default function Home({ posts, totalPages, currentPage }: {
           </div>
       </section>
     </Layout>
-  );
+  )
 }

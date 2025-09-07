@@ -3,7 +3,7 @@ import Link from "next/link";
 interface PaginationProps {
   totalPages: number;
   currentPage: number;
-}
+};
 
 // 数値範囲を生成するヘルパー関数
 const range = (start: number, end: number): number[] => {

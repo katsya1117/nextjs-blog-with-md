@@ -5,9 +5,10 @@ import { inter } from "@/lib/font";
 
 
 export default function App({ Component, pageProps }: AppProps) {
-  return;
+  return (
   // <div className={`${inter.variable} ${notoSansJP.variable}`}>
   <div className={inter.variable}>
-    <Component {...pageProps} />;
-  </div>;
+    <Component {...pageProps} />
+  </div>
+  );
 }

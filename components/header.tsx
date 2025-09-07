@@ -5,37 +5,34 @@ const name = "Katsya";
 
 type HeaderProps = {
   home?: boolean;
-};
+}
 
 export default function Header({ home }: HeaderProps) {
   return (
-    <header className="flex flex-col items-center bg-gradient-to-b from-slate-50 to-white py-4 shadow-sm">
+    <header className="flex flex-row items-center py-4 shadow-sm bg-site-texture bg-center bg-no-repeat bg-cover">
       {home ? (
         <>
-          <Image
+          {/* <Image
             src="/images/profile.png"
             alt={name}
             className="rounded-full border-4 border-gray-300 shadow-lg mb-2"
             width={96}
             height={96}
-          />
-          <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 mb-2">
+          /> */}
+          <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 mb-2 bg">
             {name}
           </h1>
-          <section className="text-lg text-gray-700 text-center">
-            <p>備忘録</p>
-          </section>
         </>
       ) : (
         <>
           <Link href="/" className="group">
-            <Image
+            {/* <Image
               src="/images/profile.png"
               alt={name}
               className="rounded-full border-2 border-gray-300 shadow mb-2"
               width={72}
               height={72}
-            />
+            /> */}
           </Link>
           <h2 className="text-2xl font-bold text-gray-900 mb-2">
             <Link
@@ -69,5 +66,5 @@ export default function Header({ home }: HeaderProps) {
         </Link>
       </nav> */}
     </header>
-  );
+  )
 }
