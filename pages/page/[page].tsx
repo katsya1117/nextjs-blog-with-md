@@ -1,10 +1,11 @@
-import Head from "next/head"
-import Image from "next/image"
-import Layout, { siteTitle } from "../../components/layout"
-import { Pagination } from "../../components/pagination"
-import Link from "next/link"
-import Date from "../../components/date"
-import type { GetStaticProps, GetStaticPaths } from "next"
+import Head from "next/head";
+import Image from "next/image";
+import Layout, { siteTitle } from "../../components/layout";
+import { Pagination } from "../../components/pagination";
+import Link from "next/link";
+import Date from "../../components/date";
+import type { GetStaticProps, GetStaticPaths, NextPage } from "next";
+import type { ReactElement, ReactNode } from "react";
 import { PER_PAGE } from "../../lib/constants";
 import { client } from "../../lib/client";
 
@@ -22,6 +23,10 @@ interface PageProps {
   currentPage: number;
   totalCount: number;
 }
+
+type NextPageWithLayout<P = unknown> = NextPage<P> & {
+  getLayout?: (page: ReactElement) => ReactNode;
+};
 
 // getStaticPaths - 2ページ目以降のパスを生成
 export const getStaticPaths: GetStaticPaths = async () => {
@@ -59,9 +64,9 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   };
 }
 
-export default function PagedPosts({ posts, totalPages, currentPage}: PageProps) {
+const PagedPosts: NextPageWithLayout<PageProps> = ({ posts, totalPages, currentPage }) => {
   return (
-    <Layout home>
+    <>
       <Head>
         <title>{`${siteTitle} - Page ${currentPage}`}</title>
       </Head>
@@ -99,12 +104,13 @@ export default function PagedPosts({ posts, totalPages, currentPage}: PageProps)
               </article>
             ))}
           </div>
-          <Pagination
-              totalPages={totalPages}
-              currentPage={currentPage}
-            />
+          <Pagination totalPages={totalPages} currentPage={currentPage} />
         </div>
       </section>
-    </Layout>
-  )
-}
+    </>
+  );
+};
+
+PagedPosts.getLayout = (page) => <Layout home>{page}</Layout>;
+
+export default PagedPosts;

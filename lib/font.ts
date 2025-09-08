@@ -1,5 +1,4 @@
 import { Inter } from "next/font/google";
-// import localFont from "next/font/local";
 // import { Inter, Noto_Sans_JP } from "next/font/google";
 
 // Inter（Google Fonts）

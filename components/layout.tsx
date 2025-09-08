@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Header from "./header";
+import Footer from "./footer";
 
 export const siteTitle = "Next.js Blog";
 
@@ -22,6 +23,7 @@ function Layout({ children, home }: LayoutProps) {
         </div>
       )}
     </div>
+    <Footer /> 
     </div>
   );
 }

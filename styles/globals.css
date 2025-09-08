@@ -1,6 +1,14 @@
 @import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Noto+Sans+JP:wght@400;700&display=swap');
 
+/* Tailwind v4 theme tokens */
+@theme {
+  /* For `bg-site-texture` utility */
+  /* --bg-site-texture: url('/images/bg-noise.jpg'); */
+  /* Optional: use with `bg-background` */
+  --color-background: #2B3742;
+}
+
 /* @layer base {
   :root {
     --font-sans: var(--font-inter), var(--font-noto-sans-jp), sans-serif;
@@ -17,7 +25,7 @@
 
 body {
   /* font-family: var(--font-sans); */
-  font-family: 'Noto Sans JP', 'Inter', sans-serif !important;
+  font-family: 'Noto Sans JP', 'Inter', sans-serif;
 }
 
 html,
@@ -28,7 +36,7 @@ body {
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif; */
   line-height: 1.6;
   font-size: 18px;
-  background-color: #ebdfd6;
+  /* background-color: #ebdfd6; */
 }
 
 * {
@@ -45,5 +53,4 @@ a:hover {
 
 img {
   max-width: 100%;
-  display: block;
 }

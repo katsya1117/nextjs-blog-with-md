@@ -9,6 +9,12 @@ import { client } from "../../lib/client";
 import { remark } from "remark";
 import html from "remark-html";
 import { Blog } from "../../types/blog";
+import type { NextPage } from "next";
+import type { ReactElement, ReactNode } from "react";
+
+type NextPageWithLayout<P = unknown> = NextPage<P> & {
+  getLayout?: (page: ReactElement) => ReactNode;
+};
 
 // 動的ルーティングのために必要な関数。pathがルーティング設定になっている
 //idがとりうる値のリストを返す
@@ -53,21 +59,24 @@ export async function getStaticProps({ params }: Params) {
     };
 }
 
-export default function Post({ postData }: { postData: Blog & { contentHtml: string } }) {
-    return (
-        <Layout>
-            <Head>
-                <title>{postData.title}</title>
-            </Head>
-            <article>
-                <h1 className={utilStyles.headingXl}>{postData.title}</h1>
-                <div className={utilStyles.lightText}>
-                    <Date dateString={postData.publishedAt} />
-                </div>
-                {/* マークダウンの内容をHTMLに変換して表示 */}
-                <div dangerouslySetInnerHTML={{ __html: postData.contentHtml }} />
-            </article>
-        </Layout>
-    );
-}
+const Post: NextPageWithLayout<{ postData: Blog & { contentHtml: string } }> = ({ postData }) => {
+  return (
+    <>
+      <Head>
+        <title>{postData.title}</title>
+      </Head>
+      <article>
+        <h1 className={utilStyles.headingXl}>{postData.title}</h1>
+        <div className={utilStyles.lightText}>
+          <Date dateString={postData.publishedAt} />
+        </div>
+        {/* マークダウンの内容をHTMLに変換して表示 */}
+        <div dangerouslySetInnerHTML={{ __html: postData.contentHtml }} />
+      </article>
+    </>
+  );
+};
 
+Post.getLayout = (page) => <Layout>{page}</Layout>;
+
+export default Post;

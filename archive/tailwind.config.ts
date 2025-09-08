@@ -8,7 +8,7 @@ const config: Config = {
       },
       backgroundImage: {
         // 背景画像
-        "site-texture": "url('public/images/bg-noise.jpg')",
+        "site-texture": "url('/images/bg-noise.jpg')",
       },
     },
   },

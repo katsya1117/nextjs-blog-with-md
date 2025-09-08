@@ -1,3 +1,4 @@
+// archived: moved from types/postData.ts
 // 投稿データの型を定義
 
 export type PostData = {
