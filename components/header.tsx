@@ -40,15 +40,22 @@ export default function Header({ home }: HeaderProps) {
               width={72}
               height={72}
             /> */}
+            <Image
+            src="/images/logo.png"
+            alt="Logo"
+            className="shadow-lg mt-2 mb-2 text-center inline"
+            width={96}
+            height={96}
+            />
           </Link>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          {/* <h2 className="text-2xl font-bold text-gray-900 mb-2">
             <Link
               href="/"
               className="text-gray-900 hover:text-indigo-600 transition-colors duration-200"
             >
               {name}
             </Link>
-          </h2>
+          </h2> */}
         </>
       )}
 

@@ -19,16 +19,17 @@ export const Pagination = ({ totalPages, currentPage }: PaginationProps) => {
   }
 
   return (
-    <ul>
+    <ul className="flex items-center gap-x-2">
       {range(1, totalPages).map((number: number, index: number) => (
-        <li key={index} className="inline-block mx-1">
+        <li key={index}>
           <Link
             // 1ページ目のリンクをルートパス('/')に、それ以外をページネーションパス('/page/2'など)に設定します
             href={number === 1 ? "/" : `/page/${number}`}
-            className={`px-3 py-1 rounded-md ${
+            aria-current={number === currentPage ? "page" : undefined}
+            className={`w-10 h-10 p-2 inline-flex items-center justify-center rounded-full transition-all duration-200 !no-underline hover:!no-underline focus:!no-underline visited:!no-underline ${
               number === currentPage
-                ? "bg-blue-500 text-white"
-                : "bg-gray-200 hover:bg-gray-300"
+                ? "bg-brand-600 text-white hover:opacity-90"
+                : "text-brand-600 border border-brand-200 bg-brand-50 hover:opacity-80"
             }`}
           >
             {number}

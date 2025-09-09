@@ -3,10 +3,20 @@
 
 /* Tailwind v4 theme tokens */
 @theme {
-  /* For `bg-site-texture` utility */
-  /* --bg-site-texture: url('/images/bg-noise.jpg'); */
-  /* Optional: use with `bg-background` */
-  --color-background: #2B3742;
+/* brand パレット（基準色 = 600） */
+--color-brand-50: #F3F5F7;
+--color-brand-100: #E7ECF0;
+--color-brand-200: #C8D2DA;
+--color-brand-300: #A6B5C0;
+--color-brand-400: #8799A7;
+--color-brand-500: #6B7E8E;
+--color-brand-600: #2B3742;
+--color-brand-700: #243039;
+--color-brand-800: #1D272F;
+--color-brand-900: #161E25;
+--color-brand-950: #10161B;
+/* 単発で bg-brand も使いたい場合（任意） */
+--color-brand: var(--color-brand-600);
 }
 
 /* @layer base {
