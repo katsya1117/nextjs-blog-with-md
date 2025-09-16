@@ -1,3 +1,7 @@
+export const config = {
+  runtime: "nodejs",
+};
+
 import type { NextApiRequest, NextApiResponse } from "next";
 import {S3Client, PutObjectCommand, HeadObjectCommand} from "@aws-sdk/client-s3";
 import { toMarkdown } from "../../utils/toMarkdown";
