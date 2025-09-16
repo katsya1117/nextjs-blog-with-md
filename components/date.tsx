@@ -1,4 +1,5 @@
 import { parseISO, format } from "date-fns";
+import { ja } from "date-fns/locale";
 
 // Propsの型を定義
 type DateProps = {
@@ -10,5 +11,5 @@ export default function Date({ dateString }: DateProps) {
     return null;
   }
   const date = parseISO(dateString);
-  return <time dateTime={dateString}>{format(date, "LLLL d, yyyy")}</time>
+  return <time dateTime={dateString}>{format(date, "PPP", { locale: ja })}</time>
 };

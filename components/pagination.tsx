@@ -19,9 +19,9 @@ export const Pagination = ({ totalPages, currentPage }: PaginationProps) => {
   }
 
   return (
-    <ul className="flex items-center gap-x-2">
-      {range(1, totalPages).map((number: number, index: number) => (
-        <li key={index}>
+    <ul className="flex justify-center items-center gap-x-2">
+      {range(1, totalPages).map((number: number) => (
+        <li key={number}>
           <Link
             // 1ページ目のリンクをルートパス('/')に、それ以外をページネーションパス('/page/2'など)に設定します
             href={number === 1 ? "/" : `/page/${number}`}

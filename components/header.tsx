@@ -9,7 +9,7 @@ type HeaderProps = {
 
 export default function Header({ home }: HeaderProps) {
   return (
-    <header className="flex flex-row items-center  justify-center py-4 shadow-sm bg-[url('/images/bg-noise.jpg')] bg-center bg-no-repeat bg-cover">
+    <header className="flex flex-row items-center justify-center py-8 shadow-sm bg-[url('/images/bg-noise.jpg')] bg-center bg-no-repeat bg-cover">
       {home ? (
         <>
           {/* <Image
@@ -23,8 +23,8 @@ export default function Header({ home }: HeaderProps) {
             src="/images/logo.png"
             alt="Logo"
             className="shadow-lg mt-2 mb-2 text-center inline"
-            width={96}
-            height={96}
+            width={128}
+            height={128}
             />
           {/* <h1 className={`text-4xl font-bold tracking-tight text-gray-900 mb-2 bg`}>
             {name}
