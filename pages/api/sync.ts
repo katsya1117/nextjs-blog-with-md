@@ -174,9 +174,19 @@ export default async function handler(
     // 削除イベント
     // =========================
     if (event === "DELETE") {
-      const fileName = `${id}.md`; // 削除時は最低限 id ベース
-      const r2Key = `backups/${fileName}`;
-      const repoPath = fileName;
+      // Need to get blog info to generate fileName by date and title
+      let blog;
+      if (blogFromBody) {
+        blog = blogFromBody;
+      } else {
+        blog = await client.get({
+          endpoint: "blogs",
+          contentId: id,
+        });
+      }
+      const fileName = `${datePart(blog.date)}-${sanitizeTitle(blog.title)}.md`;
+      const r2Key = `blogs/${fileName}`;
+      const repoPath = `blogs/${fileName}`;
 
       // 1) R2 から削除
       await s3.send(
@@ -207,9 +217,9 @@ export default async function handler(
         contentId: id,
       }));
 
-    const fileName = `${blog.id}.md`;
-    const r2Key = `backups/${fileName}`;
-    const repoPath = fileName;
+    const fileName = `${datePart(blog.date)}-${sanitizeTitle(blog.title)}.md`;
+    const r2Key = `blogs/${fileName}`;
+    const repoPath = `blogs/${fileName}`;
 
     // 差分スキップ (R2 の Metadata と比較)
     try {
