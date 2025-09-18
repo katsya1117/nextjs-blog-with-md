@@ -196,7 +196,7 @@ export default async function handler(
           contentId: id,
         });
       }
-      const fileName = `${datePart(blog.date)}-${sanitizeTitle(blog.title)}.md`;
+      const fileName = `${id}.md`;
       const r2Key = `blogs/${fileName}`;
       const repoPath = `blogs/${fileName}`;
 
@@ -232,7 +232,7 @@ export default async function handler(
         contentId: id,
       }));
 
-    const fileName = `${datePart(blog.date)}-${sanitizeTitle(blog.title)}.md`;
+    const fileName = `${blog.id}.md`;
     const r2Key = `blogs/${fileName}`;
     const repoPath = `blogs/${fileName}`;
 
