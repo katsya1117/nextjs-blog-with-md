@@ -49,7 +49,10 @@ function datePart(input?: string | null) {
   return d.toISOString().split("T")[0];
 }
 
-function makeFileName(blog: Blog, idFallback?: string) {
+function makeFileName(blog: Blog | null, idFallback?: string) {
+  if (!blog) {
+    return `${idFallback || "unknown"}.md`;
+  }
   // prefer blog.date (公開日), fallback to publishedAt or createdAt, then id
   const dateSource = blog?.date || blog?.publishedAt || blog?.createdAt;
   const date = datePart(dateSource);
@@ -208,7 +211,7 @@ export default async function handler(
       }
 
       // Determine filename: prefer date-title.md if we have blog metadata, otherwise fallback to id.md
-      const fileName = blog ? makeFileName(blog, id) : `${id}.md`;
+      const fileName = makeFileName(blog, id);
       const r2Key = `blogs/${fileName}`;
       const repoPath = `blogs/${fileName}`;
 
