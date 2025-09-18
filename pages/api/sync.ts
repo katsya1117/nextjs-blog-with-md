@@ -284,6 +284,9 @@ export default async function handler(
     }
 
     // Markdown 生成
+    if (!blog) {
+      throw new Error(`Blog not found for contentId: ${id}`);
+    }
     const md = toMarkdown(blog);
 
     // 1) R2 アップロード
