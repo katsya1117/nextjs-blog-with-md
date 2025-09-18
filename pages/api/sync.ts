@@ -235,7 +235,7 @@ export default async function handler(
       });
 
       // 3) Vercel再デプロイ
-      await triggerVercelDeploy();
+      // await triggerVercelDeploy();
 
       return res.status(200).json({ ok: true, action: "deleted", file: fileName });
     }
@@ -311,7 +311,7 @@ export default async function handler(
     });
 
     // 3) Vercel再デプロイ
-    await triggerVercelDeploy();
+    // await triggerVercelDeploy();
 
     return res
       .status(200)
