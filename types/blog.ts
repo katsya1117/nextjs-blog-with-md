@@ -5,6 +5,7 @@ export type Blog = {
   category?: string;
   date?: string;
   publishedAt: string;
+  createdAt?: string;
   updatedAt?: string;
   thumbnail?: {
     url: string;
