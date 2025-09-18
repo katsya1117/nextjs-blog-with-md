@@ -12,6 +12,17 @@ import {
 import { toMarkdown } from "../../lib/markdown";
 import { client } from "../../lib/client";
 
+// 共通: Vercel再デプロイトリガー
+async function triggerVercelDeploy() {
+  if (!process.env.VERCEL_DEPLOY_HOOK_URL) return;
+  try {
+    await fetch(process.env.VERCEL_DEPLOY_HOOK_URL, { method: "POST" });
+    console.log("Triggered Vercel redeploy via Deploy Hook");
+  } catch (err) {
+    console.error("Failed to trigger Vercel redeploy:", err);
+  }
+}
+
 const s3 = new S3Client({
   region: "auto",
   endpoint: process.env.R2_ENDPOINT,
@@ -164,6 +175,7 @@ export default async function handler(
 
   try {
     const { id, event } = req.body;
+    console.log("Webhook body:", req.body);
     const blogFromBody = req.body?.blog;
 
     if (!id && !blogFromBody) {
@@ -201,6 +213,9 @@ export default async function handler(
         filePath: repoPath,
         commitMessage: `delete: ${fileName} (contentId: ${id})`,
       });
+
+      // 3) Vercel再デプロイ
+      await triggerVercelDeploy();
 
       return res
         .status(200)
@@ -266,6 +281,9 @@ export default async function handler(
       content: md,
       commitMessage: `sync: ${fileName} (contentId: ${blog.id})`,
     });
+
+    // 3) Vercel再デプロイ
+    await triggerVercelDeploy();
 
     return res
       .status(200)
