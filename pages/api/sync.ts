@@ -32,11 +32,13 @@ const s3 = new S3Client({
   },
 });
 
-function sanitizeTitle(title: string) {
+function sanitizeForFilename(title: string) {
+  // keep Japanese/English characters, but replace forbidden filesystem chars with '-'
   return (title || "untitled")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
+    .replace(/[\/\\\?%\*:|"<>]/g, "-") // replace forbidden chars
+    .replace(/\s+/g, "-") // spaces -> hyphen
+    .replace(/-+/g, "-") // collapse multiple hyphens
+    .replace(/^-+|-+$/g, ""); // trim leading/trailing hyphens
 }
 
 function datePart(input?: string | null) {
@@ -44,6 +46,15 @@ function datePart(input?: string | null) {
   const d = new Date(input);
   if (isNaN(d.getTime())) return "unknown-date";
   return d.toISOString().split("T")[0];
+}
+
+function makeFileName(blog: any, idFallback?: string) {
+  // prefer blog.date (公開日), fallback to publishedAt or createdAt, then id
+  const dateSource = blog?.date || blog?.publishedAt || blog?.createdAt;
+  const date = datePart(dateSource);
+  const title = blog?.title ? sanitizeForFilename(blog.title) : (idFallback || "untitled");
+  if (!title) return `${idFallback || "unknown"}.md`;
+  return `${date}-${title}.md`;
 }
 
 // GitHub 更新/作成
@@ -174,39 +185,44 @@ export default async function handler(
     return res.status(405).json({ error: "Method not allowed" });
 
   try {
-    const { id, event } = req.body;
+    const { id, event, type } = req.body;
+    const incomingEvent = (event || type || "").toString().toLowerCase();
     console.log("Webhook body:", req.body);
-    const blogFromBody = req.body?.blog;
-
-    if (!id && !blogFromBody) {
-      return res.status(400).json({ error: "Missing id or blog" });
-    }
+    const blogFromBody = req.body?.blog || req.body?.contents?.old?.publishValue || req.body?.contents?.old?.draftValue || null;
 
     // =========================
     // 削除イベント
     // =========================
-    if (event === "DELETE") {
-      // Need to get blog info to generate fileName by date and title
-      let blog;
-      if (blogFromBody) {
-        blog = blogFromBody;
-      } else {
-        blog = await client.get({
-          endpoint: "blogs",
-          contentId: id,
-        });
+    if (incomingEvent === "delete") {
+      // Try to obtain blog metadata from webhook payload (publishValue/draftValue) first
+      let blog: any = blogFromBody || null;
+      if (!blog) {
+        // If webhook did not include body data, we cannot fetch the content from microCMS after deletion.
+        // As a fallback we'll try to query microCMS (may 404) and if that fails, fallback to id-based filename.
+        try {
+          blog = await client.get({ endpoint: "blogs", contentId: id });
+        } catch (e) {
+          blog = null;
+        }
       }
-      const fileName = `${id}.md`;
+
+      // Determine filename: prefer date-title.md if we have blog metadata, otherwise fallback to id.md
+      const fileName = blog ? makeFileName(blog, id) : `${id}.md`;
       const r2Key = `blogs/${fileName}`;
       const repoPath = `blogs/${fileName}`;
 
       // 1) R2 から削除
-      await s3.send(
-        new DeleteObjectCommand({
-          Bucket: process.env.R2_BUCKET!,
-          Key: r2Key,
-        })
-      );
+      try {
+        await s3.send(
+          new DeleteObjectCommand({
+            Bucket: process.env.R2_BUCKET!,
+            Key: r2Key,
+          })
+        );
+        console.log(`Deleted ${r2Key} from R2`);
+      } catch (err) {
+        console.warn(`R2 delete warning (may not exist): ${err}`);
+      }
 
       // 2) GitHub から削除
       await deleteFromGithub({
@@ -217,9 +233,7 @@ export default async function handler(
       // 3) Vercel再デプロイ
       await triggerVercelDeploy();
 
-      return res
-        .status(200)
-        .json({ ok: true, action: "deleted", file: fileName });
+      return res.status(200).json({ ok: true, action: "deleted", file: fileName });
     }
 
     // =========================
@@ -232,7 +246,7 @@ export default async function handler(
         contentId: id,
       }));
 
-    const fileName = `${blog.id}.md`;
+    const fileName = makeFileName(blog, blog.id);
     const r2Key = `blogs/${fileName}`;
     const repoPath = `blogs/${fileName}`;
 
