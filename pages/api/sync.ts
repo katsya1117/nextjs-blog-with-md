@@ -11,6 +11,7 @@ import {
 } from "@aws-sdk/client-s3";
 import { toMarkdown } from "../../lib/markdown";
 import { client } from "../../lib/client";
+import type { Blog } from "../../types/blog";
 
 // 共通: Vercel再デプロイトリガー
 async function triggerVercelDeploy() {
@@ -48,7 +49,7 @@ function datePart(input?: string | null) {
   return d.toISOString().split("T")[0];
 }
 
-function makeFileName(blog: any, idFallback?: string) {
+function makeFileName(blog: Blog, idFallback?: string) {
   // prefer blog.date (公開日), fallback to publishedAt or createdAt, then id
   const dateSource = blog?.date || blog?.publishedAt || blog?.createdAt;
   const date = datePart(dateSource);
@@ -195,7 +196,7 @@ export default async function handler(
     // =========================
     if (incomingEvent === "delete") {
       // Try to obtain blog metadata from webhook payload (publishValue/draftValue) first
-      let blog: any = blogFromBody || null;
+      let blog: Blog | null = blogFromBody || null;
       if (!blog) {
         // If webhook did not include body data, we cannot fetch the content from microCMS after deletion.
         // As a fallback we'll try to query microCMS (may 404) and if that fails, fallback to id-based filename.
@@ -239,14 +240,21 @@ export default async function handler(
     // =========================
     // 作成・更新イベント
     // =========================
-    const blog =
-      blogFromBody ??
-      (await client.get({
-        endpoint: "blogs",
-        contentId: id,
-      }));
+    let blog: Blog | null = null;
+    try {
+      blog = await client.get({ endpoint: "blogs", contentId: id });
+    } catch (e) {
+      blog = blogFromBody;
+    }
 
-    const fileName = makeFileName(blog, blog.id);
+    const fileName = makeFileName(blog, id);
+    console.log("[sync] upsert filename decided:", {
+      id,
+      title: blog?.title,
+      date: blog?.date || blog?.publishedAt || blog?.createdAt,
+      fileName,
+    });
+
     const r2Key = `blogs/${fileName}`;
     const repoPath = `blogs/${fileName}`;
 
@@ -259,7 +267,7 @@ export default async function handler(
         })
       );
       const prevUpdatedAt = head.Metadata?.["updated-at"];
-      if (prevUpdatedAt && blog.updatedAt && prevUpdatedAt === blog.updatedAt) {
+      if (prevUpdatedAt && blog?.updatedAt && prevUpdatedAt === blog.updatedAt) {
         return res
           .status(200)
           .json({ ok: true, action: "skipped", file: fileName });
@@ -283,8 +291,8 @@ export default async function handler(
         Body: md,
         ContentType: "text/markdown",
         Metadata: {
-          "updated-at": blog.updatedAt || "",
-          "content-id": blog.id || "",
+          "updated-at": blog?.updatedAt || "",
+          "content-id": blog?.id || "",
         },
       })
     );
@@ -293,7 +301,7 @@ export default async function handler(
     await upsertToGithub({
       filePath: repoPath,
       content: md,
-      commitMessage: `sync: ${fileName} (contentId: ${blog.id})`,
+      commitMessage: `sync: ${fileName} (contentId: ${blog?.id})`,
     });
 
     // 3) Vercel再デプロイ
