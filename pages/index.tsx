@@ -30,11 +30,8 @@ import { getBlogList } from "../lib/blogService";
           <title>{siteTitle}</title>
         </Head>
         <section>
-          <h2 className="text-3xl font-bold my-4 text-center">Blog</h2>
-          <section className="text-lg text-gray-700 text-center">
-            <p>備忘録</p>
-          </section>
-
+          <h2 className="text-3xl font-bold mt-10 text-center">Blog</h2>
+            <p  className="text-lg text-gray-700 mt-4 text-center">備忘録</p>
           <div className="container mx-auto px-10 py-10 space-y-8">
             <BlogGrid posts={posts} />
             <Pagination totalPages={totalPages} currentPage={currentPage} />
