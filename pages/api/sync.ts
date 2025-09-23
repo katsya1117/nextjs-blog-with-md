@@ -14,15 +14,15 @@ import { client } from "../../lib/client";
 import type { Blog } from "../../types/blog";
 
 // 共通: Vercel再デプロイトリガー
-async function triggerVercelDeploy() {
-  if (!process.env.VERCEL_DEPLOY_HOOK_URL) return;
-  try {
-    await fetch(process.env.VERCEL_DEPLOY_HOOK_URL, { method: "POST" });
-    console.log("Triggered Vercel redeploy via Deploy Hook");
-  } catch (err) {
-    console.error("Failed to trigger Vercel redeploy:", err);
-  }
-}
+// async function triggerVercelDeploy() {
+//   if (!process.env.VERCEL_DEPLOY_HOOK_URL) return;
+//   try {
+//     await fetch(process.env.VERCEL_DEPLOY_HOOK_URL, { method: "POST" });
+//     console.log("Triggered Vercel redeploy via Deploy Hook");
+//   } catch (err) {
+//     console.error("Failed to trigger Vercel redeploy:", err);
+//   }
+// }
 
 const s3 = new S3Client({
   region: "auto",

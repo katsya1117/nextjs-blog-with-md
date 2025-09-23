@@ -5,7 +5,7 @@ import type { GetStaticProps, GetStaticPaths, NextPage } from "next";
 import type { ReactElement, ReactNode } from "react";
 import { PER_PAGE } from "../../lib/constants";
 import { client } from "../../lib/client";
-import { getBlogList } from "../../lib/blogs";
+import { getBlogList } from "../../lib/blogService";
 import BlogGrid from "../../components/BlogGrid";
 import type { Blog } from "../../types/blog";
 

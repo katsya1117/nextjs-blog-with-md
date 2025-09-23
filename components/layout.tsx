@@ -1,6 +1,6 @@
-import Link from "next/link";
 import Header from "./header";
 import Footer from "./footer";
+import BackToHomeLink from "./BackToHomeLink";
 
 export const siteTitle = "Next.js Blog";
 
@@ -12,18 +12,17 @@ type LayoutProps = {
 
 function Layout({ children, home }: LayoutProps) {
   return (
-    <div>
-      <Header home={home}/>
-    <div className="max-w-[1244px] px-4 mx-auto">
-      
-      <main>{children}</main>
-      {!home && (
-        <div className="mt-8 text-center">
-          <Link href="/" className="text-blue-600 hover:underline">← ホームに戻る</Link>
-        </div>
-      )}
-    </div>
-    <Footer /> 
+    <div className="flex min-h-screen flex-col">
+      <Header home={home} />
+      <div className="mx-auto flex w-full flex-1 flex-col">
+        <main className="flex-1">{children}</main>
+        {!home && (
+          <div className="mt-12 flex justify-center pb-12">
+            <BackToHomeLink />
+          </div>
+        )}
+      </div>
+      <Footer />
     </div>
   );
 }

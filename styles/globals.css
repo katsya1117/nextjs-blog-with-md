@@ -1,5 +1,5 @@
-@import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Noto+Sans+JP:wght@400;700&display=swap');
+@import "tailwindcss";
 
 /* Tailwind v4 theme tokens */
 @theme {
@@ -59,6 +59,24 @@ a {
 
 a:hover {
   text-decoration: underline;
+}
+
+.tag-pill,
+.tag-pill:hover,
+.tag-pill:focus {
+  text-decoration: none;
+}
+
+.card-title-link,
+.card-title-link:hover,
+.card-title-link:focus {
+  text-decoration: none;
+}
+
+.back-home-link,
+.back-home-link:hover,
+.back-home-link:focus {
+  text-decoration: none;
 }
 
 img {
