@@ -157,6 +157,7 @@ const Post: NextPageWithLayout<{
                 sizes="100vw"
                 className="object-cover"
                 priority={false}
+                unoptimized
               />
             </div>
           </figure>
