@@ -118,6 +118,7 @@ const Post: NextPageWithLayout<{
   // どちらも空であればカテゴリリンクを描画しない。
   const displayCategory = formatCategory(postData.category);
   const categorySlug = categoryToSlug(postData.category);
+  const heroSrc = postData.heroOptimizedUrl ?? postData.thumbnail?.url;
   return (
     <>
       <Head>
@@ -145,15 +146,12 @@ const Post: NextPageWithLayout<{
           )}
         </div>
         {/* サムネイル表示 */}
-        {(postData.heroOptimizedUrl || postData.thumbnail) && (
+        {heroSrc && (
           // サムネイルはフルブリードで表示し、Next.js Image に最適化を任せる
           <figure className="relative left-1/2 w-screen -translate-x-1/2 overflow-hidden rounded-tl-[32px] md:rounded-tl-[64px]">
             <div className="relative aspect-[16/9] w-full">
               <Image
-                src={
-                  postData.heroOptimizedUrl ??
-                  postData.thumbnail.url
-                }
+                src={heroSrc}
                 alt={postData.title}
                 fill
                 sizes="100vw"
