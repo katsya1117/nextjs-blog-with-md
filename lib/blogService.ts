@@ -1,6 +1,7 @@
 import { client } from "./client";
 import { PER_PAGE } from "./constants";
 import { normalizeCategory } from "./categories";
+import { buildMicroCmsImageUrl } from "./microcmsImage";
 import type { Blog } from "../types/blog";
 
 export type BlogListResult = {
@@ -21,8 +22,10 @@ export async function getBlogList(page = 1): Promise<BlogListResult> {
     queries: { limit: PER_PAGE, offset },
   });
 
+  const posts = (data.contents as Blog[]).map(withOptimizedImages);
+
   return {
-    posts: data.contents as Blog[],
+    posts,
     totalPages: Math.ceil(data.totalCount / PER_PAGE),
     currentPage,
     totalCount: data.totalCount,
@@ -72,7 +75,7 @@ export async function getBlogsByCategory(category: string): Promise<Blog[]> {
     });
 
     // ページング単位で取得した記事を配列へ蓄積
-    posts.push(...(data.contents as Blog[]));
+    posts.push(...(data.contents as Blog[]).map(withOptimizedImages));
 
     offset += BATCH_LIMIT;
     if (offset >= data.totalCount) {
@@ -99,9 +102,38 @@ export async function getBlogListByCategory(
   });
 
   return {
-    posts: data.contents as Blog[],
+    posts: (data.contents as Blog[]).map(withOptimizedImages),
     totalPages: Math.ceil(data.totalCount / PER_PAGE),
     currentPage,
     totalCount: data.totalCount,
   };
+}
+
+type ImageField = {
+  url: string;
+  width: number;
+  height: number;
+} | null | undefined;
+
+function withOptimizedImages(post: Blog): Blog {
+  const hero = pickImage(post.thumbnail);
+  const card = pickImage(post.thumbnail);
+
+  const heroOptimizedUrl = hero
+    ? buildMicroCmsImageUrl(hero.url, { width: 1920, quality: 85 })
+    : undefined;
+  const cardOptimizedUrl = card
+    ? buildMicroCmsImageUrl(card.url, { width: 1200, quality: 82 })
+    : undefined;
+
+  return {
+    ...post,
+    heroOptimizedUrl,
+    cardOptimizedUrl,
+  };
+}
+
+function pickImage(image: ImageField): ImageField {
+  if (!image?.url) return undefined;
+  return image;
 }

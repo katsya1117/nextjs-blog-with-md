@@ -7,6 +7,7 @@ import Link from "next/link";
 import Date from "../../components/date";
 import Image from "next/image";
 import { client } from "../../lib/client";
+import { buildMicroCmsImageUrl } from "../../lib/microcmsImage";
 import { remark } from "remark";
 import html from "remark-html";
 import { Blog } from "../../types/blog";
@@ -68,6 +69,11 @@ export async function getStaticProps({ params }: Params) {
     fields: ["id", "title", "publishedAt", "body", "thumbnail", "category"],
   } as ExtendedGetRequest);
 
+  const heroImage = post.thumbnail;
+  const heroOptimizedUrl = heroImage
+    ? buildMicroCmsImageUrl(heroImage.url, { width: 1920, quality: 85 })
+    : undefined;
+
   // Markdown to HTML
   const processedContent = await remark()
     .use(remarkFigureCaption, {
@@ -81,6 +87,7 @@ export async function getStaticProps({ params }: Params) {
     props: {
       postData: {
         ...post,
+        heroOptimizedUrl,
         contentHtml,
       },
     },
@@ -138,12 +145,15 @@ const Post: NextPageWithLayout<{
           )}
         </div>
         {/* サムネイル表示 */}
-        {postData.thumbnail && (
+        {(postData.heroOptimizedUrl || postData.thumbnail) && (
           // サムネイルはフルブリードで表示し、Next.js Image に最適化を任せる
           <figure className="relative left-1/2 w-screen -translate-x-1/2 overflow-hidden rounded-tl-[32px] md:rounded-tl-[64px]">
             <div className="relative aspect-[16/9] w-full">
               <Image
-                src={postData.thumbnail.url}
+                src={
+                  postData.heroOptimizedUrl ??
+                  postData.thumbnail.url
+                }
                 alt={postData.title}
                 fill
                 sizes="100vw"

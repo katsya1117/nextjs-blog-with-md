@@ -12,4 +12,6 @@ export type Blog = {
     height: number;
     width: number;
   };
+  heroOptimizedUrl?: string;
+  cardOptimizedUrl?: string;
 };

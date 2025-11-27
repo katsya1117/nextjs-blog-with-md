@@ -14,17 +14,19 @@ export default function BlogCard({ post, showCategory = true }: BlogCardProps) {
   // 表示用（常に # 付き）とリンク用スラッグをここで算出
   const displayCategory = formatCategory(category);
   const categorySlug = categoryToSlug(category);
+  const cardImage = thumbnail;
+  const cardSrc = post.cardOptimizedUrl ?? thumbnail?.url;
   return (
     <article className="flex flex-col overflow-hidden rounded-lg border bg-white">
       {/* アイキャッチ画像全体を投稿ページへリンクさせる */}
       <Link href={`/posts/${id}`}>
         <div className="group relative block h-48 overflow-hidden bg-gray-100 md:h-64">
-          {thumbnail?.url && (
+          {cardSrc && cardImage?.width && cardImage?.height && (
             <Image
-              src={thumbnail.url}
+              src={cardSrc}
               alt={title}
-              width={thumbnail.width}
-              height={thumbnail.height}
+              width={cardImage.width}
+              height={cardImage.height}
               sizes="(min-width:1024px) 33vw, (min-width:640px) 50vw, 100vw"
               className="absolute inset-0 h-full w-full object-cover object-center transition duration-200 group-hover:scale-110"
             />
